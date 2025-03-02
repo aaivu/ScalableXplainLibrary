@@ -1,0 +1,5 @@
+pyspark == 3.5.1
+setuptools
+numpy
+pandas
+shap
