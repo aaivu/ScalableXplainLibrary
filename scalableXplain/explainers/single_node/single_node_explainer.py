@@ -1,11 +1,3 @@
-"""
-Abstract base class for single-node explainers.
-
-This module defines a template for explainers that run on a single machine,
-typically by converting a Spark DataFrame to pandas. Concrete implementations
-(such as SHAP or LIME single-node explainers) should inherit from this class.
-"""
-
 from abc import abstractmethod
 from pyspark.sql import DataFrame as SparkDataFrame
 

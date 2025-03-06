@@ -17,7 +17,6 @@ class TestIrisShapWithScalableXplain(unittest.TestCase):
     Demonstrates using the scalableXplain package to explain a scikit-learn
     logistic regression model trained on the Iris dataset, loaded via PySpark.
     """
-
     @classmethod
     def setUpClass(cls):
         # Create a Spark session once for all tests in this class
