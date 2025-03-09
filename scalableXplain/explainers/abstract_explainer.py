@@ -50,19 +50,3 @@ class AbstractExplainer(ABC):
             A specialized explanation object for the given row(s).
         """
         raise NotImplementedError("This explainer does not support per-row explanations.")
-
-    def fit(self, *args, **kwargs):
-        """
-        Optional fit step (if your explainer needs a training or calibration phase).
-
-        Some explainers—like certain SHAP or LIME variants—may require an internal model
-        or background distribution to be 'fit' before calling `explain()`. If that's
-        the case, override and implement this method in the subclass. Otherwise, it
-        can remain unimplemented.
-
-        Parameters
-        ----------
-        *args, **kwargs :
-            Flexible signature for any data or parameters needed to fit the explainer.
-        """
-        raise NotImplementedError("This explainer does not have a fit step.")

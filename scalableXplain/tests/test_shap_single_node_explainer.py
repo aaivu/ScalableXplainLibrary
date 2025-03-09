@@ -1,14 +1,13 @@
 import unittest
 import sys
 
-import pandas as pd
 import shap
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 from pyspark.sql import SparkSession
 
 # Import from your package:
-from scalableXplain.explainers.single_node.single_node_shap import SHAPSingleNodeExplainer
+from scalableXplain.explainers.single_node.feature_importance.single_node_shap import SHAPSingleNodeExplainer
 from scalableXplain.explanations.feature_importance_explanation import FeatureImportanceExplanation
 
 

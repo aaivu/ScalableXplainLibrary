@@ -1,16 +1,14 @@
 import unittest
 import sys
-import matplotlib.pyplot as plt
 
 from pyspark.sql import SparkSession
-import pandas as pd
 
 # scikit-learn for local training
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 
 # Import classes from your package
-from scalableXplain.explainers.single_node.single_node_shap import SHAPSingleNodeExplainer
+from scalableXplain.explainers.single_node.feature_importance.single_node_shap import SHAPSingleNodeExplainer
 from scalableXplain.explanations.feature_importance_explanation import FeatureImportanceExplanation
 
 

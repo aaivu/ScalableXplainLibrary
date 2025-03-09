@@ -1,27 +1,22 @@
-# explanations/feature_importance_explanation.py
+from .abstract_explanation import AbstractExplanation
 
-class FeatureImportanceExplanation:
+class FeatureImportanceExplanation(AbstractExplanation):
     """
-    A simple container to store feature importance results.
+    Stores feature importance values from SHAP.
     """
-    def __init__(self,
-                 feature_importances: dict[str, float],
-                 method: str,
-                 description: str):
-        """
-        Parameters
-        ----------
-        feature_importances : dict
-            A dictionary of {feature_name: importance_score}.
-        method : str
-            Identifier for the explanation method (e.g. "SHAP", "LIME").
-        description : str
-            Human-readable description of how these importances were derived.
-        """
+
+    def __init__(self, feature_importances, method="SHAP"):
         self.feature_importances = feature_importances
         self.method = method
-        self.description = description
 
-    def __repr__(self):
-        return (f"FeatureImportanceExplanation(method={self.method}, "
-                f"importances={self.feature_importances})")
+    def to_dict(self):
+        return {
+            "method": self.method,
+            "feature_importances": self.feature_importances
+        }
+
+    def plot(self):
+        """Plot using a bar plot."""
+        from scalableXplain.plots.bar_plot import BarPlot
+        plot = BarPlot(self.feature_importances)
+        plot.render()

@@ -3,14 +3,13 @@ import pandas as pd
 import shap
 from typing import Optional, Any
 from pyspark.sql import DataFrame as SparkDataFrame
-from scalableXplain.explainers.single_node.single_node_explainer import SingleNodeExplainer
+from scalableXplain.explainers.single_node.feature_importance.sn_feature_importance import SNFeatureImportancelainer
 
 
-class TreeSHAPSingleNodeExplainer(SingleNodeExplainer):
+class TreeSHAPSingleNodeExplainer(SNFeatureImportancelainer):
     """
     A single-node SHAP explainer for tree-based models using TreeSHAP.
     """
-
     def __init__(
         self,
         model: Any,
@@ -70,41 +69,41 @@ class TreeSHAPSingleNodeExplainer(SingleNodeExplainer):
 
         return feature_importances
 
-    # def explain_row(self, row: SparkDataFrame) -> dict:
-    #     """
-    #     Computes SHAP values for a single row.
-    #
-    #     Parameters
-    #     ----------
-    #     row : SparkDataFrame
-    #         A single-row Spark DataFrame.
-    #
-    #     Returns
-    #     -------
-    #     dict
-    #         Dictionary of feature SHAP values `{feature_name: SHAP value}`.
-    #     """
-    #     row_pandas = row.toPandas()
-    #     explainer = self._get_explainer(row_pandas)
-    #     shap_values = explainer.shap_values(row_pandas[self.feature_cols])
-    #
-    #     # Handle multi-class output by averaging across classes
-    #     if isinstance(shap_values, list):
-    #         row_values = np.mean(np.array(shap_values), axis=0)  # (samples, features)
-    #     else:
-    #         row_values = shap_values  # Single-class case
-    #
-    #     row_feature_importances = dict(zip(self.feature_cols, row_values[0]))  # Extract first row
-    #
-    #     print("\n🔹 SHAP Values for Single Row:")
-    #     for feature, shap_value in row_feature_importances.items():
-    #         # Convert array to scalar or list
-    #         if isinstance(shap_value, np.ndarray):
-    #             print(f"  {feature}: {shap_value.tolist()}")  # Multi-class case
-    #         else:
-    #             print(f"  {feature}: {float(shap_value):.6f}")  # Single-class case
-    #
-    #     return row_feature_importances
+    def explain_row(self, row: SparkDataFrame) -> dict:
+        """
+        Computes SHAP values for a single row.
+
+        Parameters
+        ----------
+        row : SparkDataFrame
+            A single-row Spark DataFrame.
+
+        Returns
+        -------
+        dict
+            Dictionary of feature SHAP values `{feature_name: SHAP value}`.
+        """
+        row_pandas = row.toPandas()
+        explainer = self._get_explainer(row_pandas)
+        shap_values = explainer.shap_values(row_pandas[self.feature_cols])
+
+        # Handle multi-class output by averaging across classes
+        if isinstance(shap_values, list):
+            row_values = np.mean(np.array(shap_values), axis=0)  # (samples, features)
+        else:
+            row_values = shap_values  # Single-class case
+
+        row_feature_importances = dict(zip(self.feature_cols, row_values))  # Extract first row
+
+        print("\n🔹 SHAP Values for Single Row:")
+        for feature, shap_value in row_feature_importances.items():
+            # Convert array to scalar or list
+            if isinstance(shap_value, np.ndarray):
+                print(f"  {feature}: {shap_value.tolist()}")  # Multi-class case
+            else:
+                print(f"  {feature}: {float(shap_value):.6f}")  # Single-class case
+
+        return row_feature_importances
 
     def _prepare_data(self) -> pd.DataFrame:
         """

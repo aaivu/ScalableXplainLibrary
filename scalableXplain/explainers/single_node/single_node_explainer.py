@@ -16,7 +16,7 @@ class SingleNodeExplainer(AbstractExplainer):
     implement the `explain()` and optionally `explain_row()` methods.
     """
 
-    def __init__(self, model, data: SparkDataFrame):
+    def __init__(self, data: SparkDataFrame):
         """
         Parameters
         ----------
@@ -27,7 +27,6 @@ class SingleNodeExplainer(AbstractExplainer):
             The Spark DataFrame containing features (and possibly labels) to be explained.
         """
         super().__init__()  # Call the base AbstractExplainer constructor (if needed)
-        self.model = model
         self.data = data
 
     @abstractmethod
