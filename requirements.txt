@@ -1,6 +1,9 @@
-pyspark == 3.5.1
+pyspark == 3.4.1
 setuptools
 numpy
 pandas
 shap
 matplotlib
+scikit-learn
+synapseml
+```

@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 
 # Import classes from your package
-from scalableXplain.explainers.single_node.feature_importance.single_node_shap import SHAPSingleNodeExplainer
+from scalableXplain.explainers.single_node.feature_importance.single_node_kernelshap import SHAPSingleNodeExplainer
 from scalableXplain.explanations.feature_importance_explanation import FeatureImportanceExplanation
 
 
