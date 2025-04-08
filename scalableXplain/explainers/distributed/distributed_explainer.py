@@ -47,7 +47,7 @@ class DistributedExplainer(AbstractExplainer):
         """
         raise NotImplementedError("Subclasses must implement the `explain` method.")
 
-    def explain_row(self, row: SparkDataFrame, *args, **kwargs):
+    def explain_row(self, data: SparkDataFrame, *args, **kwargs):
         """
         Optionally produce an explanation for a single row (or small subset).
 
@@ -56,7 +56,7 @@ class DistributedExplainer(AbstractExplainer):
 
         Parameters
         ----------
-        row : SparkDataFrame
+        data : SparkDataFrame
             A Spark DataFrame containing the row(s) to be explained.
 
         Returns

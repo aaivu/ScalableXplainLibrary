@@ -13,15 +13,15 @@ class DistributedTabularSHAP(DistributedExplainer):
     """
 
     def __init__(
-        self,
-        model,
-        data: SparkDataFrame,
-        input_cols,
-        target_col="probability",
-        target_classes=[1],
-        output_col="shapValues",
-        num_samples=5000,
-        background_data=None,
+            self,
+            model,
+            data: SparkDataFrame,
+            input_cols,
+            target_col="probability",
+            target_classes=[1],
+            output_col="shapValues",
+            num_samples=5000,
+            background_data=None,
     ):
         """
         Parameters
@@ -58,8 +58,6 @@ class DistributedTabularSHAP(DistributedExplainer):
             background_data = self.data.orderBy(F.rand()).limit(ten_percent_rows)
 
         self.background_data = background_data
-
-
 
     def explain(self, data=None):
         """
@@ -114,9 +112,21 @@ class DistributedTabularSHAP(DistributedExplainer):
         result = global_shap_df.collect()[0].asDict()
         return result
 
-    def explain_row(self, row: SparkDataFrame):
+    def explain_row(self, data: None):
         """
         Compute TabularSHAP for a single-row Spark DataFrame subset.
         Returns a dictionary with global SHAP values for each feature.
         """
-        return self.explain(data=row)
+
+        shap = TabularSHAP(
+            inputCols=self.input_cols,
+            outputCol=self.output_col,
+            numSamples=self.num_samples,
+            model=self.model,
+            targetCol=self.target_col,
+            targetClasses=self.target_classes,
+            backgroundData=self.background_data,
+        )
+        shap_df = shap.transform(data)
+
+        return shap_df

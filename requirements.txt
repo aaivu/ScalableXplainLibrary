@@ -3,6 +3,7 @@ setuptools
 numpy
 pandas
 shap
+lime
 matplotlib
 scikit-learn
 synapseml

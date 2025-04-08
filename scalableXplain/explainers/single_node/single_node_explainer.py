@@ -13,8 +13,8 @@ class SingleNodeExplainer(AbstractExplainer):
         """
         raise NotImplementedError("Subclasses must implement the `explain` method.")
 
-    def explain_row(self, row):
-        """
-        Explain a single row of data.
-        """
-        return self.explain([row])[0]
+    # def explain_row(self, row):
+    #     """
+    #     Explain a single row of data.
+    #     """
+    #     return self.explain([row])[0]

@@ -12,15 +12,10 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import FloatType
 from pyspark.ml.functions import vector_to_array
 
-# Import the distributed explainer
+# If your new LIME explainer is in a file named distributed_tabular_lime.py:
 # Adjust path if your code is structured differently:
-from scalableXplain.explainers.distributed.distributed_kernel_shap import DistributedTabularSHAP
-from scalableXplain.plots.bar_plot import BarPlot
+from scalableXplain.explainers.distributed.distributed_lime import DistributedTabularLIME
 
-
-# -------------------------
-# 1) Define the UDF at module level
-# -------------------------
 
 def vector_access_udf(v, i):
     """Extract float(v[i]) from a Spark ML vector, safe for pickling."""
@@ -30,13 +25,13 @@ def vector_access_udf(v, i):
 vec_access = F.udf(vector_access_udf, FloatType())
 
 
-class TestDistributedTabularSHAPIris(unittest.TestCase):
+class TestDistributedTabularLIMEIris(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 1. Create Spark Session with SynapseML on the classpath
         cls.spark = (
             SparkSession.builder
-            .appName("TestDistributedTabularSHAPIris")
+            .appName("TestDistributedTabularLIMEIris")
             .master("local[*]")
             .config("spark.jars.packages", "com.microsoft.azure:synapseml_2.12:1.0.10")
             .config("spark.jars.repositories", "https://mmlspark.azureedge.net/maven")
@@ -49,11 +44,12 @@ class TestDistributedTabularSHAPIris(unittest.TestCase):
 
         print("Spark DF columns:", df_spark.columns)
 
-        # For demonstration, let's see if we have "SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm",
-        # "Species" We'll treat "Species" as the label that we index
+        # For demonstration, let's see if we have columns:
+        #   "SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm", "Species"
+        # We'll treat "Species" as the label that we index
         label_indexer = StringIndexer(inputCol="Species", outputCol="label").fit(df_spark)
 
-        # 4. Vector Assemble for logistic regression
+        # 3. Vector Assemble for logistic regression
         numeric_features = ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]
         assembler = VectorAssembler(
             inputCols=numeric_features,
@@ -77,47 +73,45 @@ class TestDistributedTabularSHAPIris(unittest.TestCase):
     def tearDownClass(cls):
         cls.spark.stop()
 
-    def test_tabular_shap_iris(self):
+    def test_tabular_lime_iris(self):
         """
-                Use DistributedTabularSHAP on the Iris dataset
-                and visualize the results for a small subset.
-                """
-        # 1. Create small random background dataset
+        Use DistributedTabularLIME on the Iris dataset
+        and visualize the results for a small subset.
+        """
+        # 1. Create a small random background dataset
         background_data = broadcast(
             self.full_df.orderBy(rand()).limit(100).cache()
         )
 
-        # 2. Build the distributed TabularSHAP
+        # 2. Build the DistributedTabularLIME
         numeric_features = ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]
-        shap_explainer = DistributedTabularSHAP(
+        lime_explainer = DistributedTabularLIME(
             model=self.model,
             data=self.full_df,
             input_cols=numeric_features,
             target_col="probability",  # logistic regression outputs this vector
-            target_classes=[1],  # let's explain class index=1
+            target_classes=[1],        # let's explain class index=1
             num_samples=2000,
             background_data=background_data
         )
 
-        # 3. Explain the subset
-        shap_values = shap_explainer.explain(data=self.full_df)
+        # 3. Explain the subset (or entire dataset)
+        lime_values = lime_explainer.explain(data=self.full_df)
 
-        print("ll", shap_values)
-
-        # ------
+        print("Global LIME values for numeric_features:", lime_values)
 
     def test_explain_row(self):
         """
-        Test single-row SHAP explanation using the DistributedTabularSHAP or a similar approach.
+        Test single-row LIME explanation using the DistributedTabularLIME approach.
         """
-        # 1. Create small background dataset again (or reuse if suitable)
+        # 1. Create a small background dataset
         background_data = broadcast(
             self.full_df.orderBy(rand()).limit(100).cache()
         )
 
-        # 2. Initialize SHAP explainer
+        # 2. Initialize LIME explainer
         numeric_features = ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]
-        shap_explainer = DistributedTabularSHAP(
+        lime_explainer = DistributedTabularLIME(
             model=self.model,
             data=self.full_df,  # Full dataset helps define the domain
             input_cols=numeric_features,
@@ -127,9 +121,12 @@ class TestDistributedTabularSHAPIris(unittest.TestCase):
             background_data=background_data
         )
 
-        shap_values = shap_explainer.explain_row(data=self.full_df)
-        print("SHAP values for single row:")
-        shap_values.show(truncate=False)
+        # 3. Explain a single row (or small subset)
+        single_row_df = self.explain_instances.limit(1)  # or use self.full_df.limit(1)
+
+        lime_values_single = lime_explainer.explain_row(data=single_row_df)
+        print("LIME values for single row:")
+        lime_values_single.show(truncate=False)
 
 
 if __name__ == "__main__":

@@ -31,22 +31,22 @@ class AbstractExplainer(ABC):
         """
         raise NotImplementedError("Subclasses must implement the `explain` method.")
 
-    def explain_row(self, *args, **kwargs):
-        """
-        Optionally produce an explanation for a single row (or small subset of rows).
-
-        By default, it raises NotImplementedError. Concrete subclasses can override
-        this if row-level explanations are supported.
-
-        Parameters
-        ----------
-        *args, **kwargs :
-            Flexible signature to accommodate various data formats (Spark rows,
-            pandas DataFrames, NumPy arrays, etc.).
-
-        Returns
-        -------
-        Explanation
-            A specialized explanation object for the given row(s).
-        """
-        raise NotImplementedError("This explainer does not support per-row explanations.")
+    # def explain_row(self, *args, **kwargs):
+    #     """
+    #     Optionally produce an explanation for a single row (or small subset of rows).
+    #
+    #     By default, it raises NotImplementedError. Concrete subclasses can override
+    #     this if row-level explanations are supported.
+    #
+    #     Parameters
+    #     ----------
+    #     *args, **kwargs :
+    #         Flexible signature to accommodate various data formats (Spark rows,
+    #         pandas DataFrames, NumPy arrays, etc.).
+    #
+    #     Returns
+    #     -------
+    #     Explanation
+    #         A specialized explanation object for the given row(s).
+    #     """
+    #     raise NotImplementedError("This explainer does not support per-row explanations.")

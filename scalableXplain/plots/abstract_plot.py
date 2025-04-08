@@ -5,7 +5,6 @@ class AbstractPlot(ABC):
     """
     Abstract base class for all plots.
     """
-
     def __init__(self, data):
         self.data = data
 

@@ -26,10 +26,10 @@ class BarPlot(AbstractPlot):
         for i, v in enumerate(sorted_importances):
             plt.text(v + 0.01, i, f"+{v:.2f}", va="center", fontsize=10, color="black")
 
-        plt.xlabel("mean(|SHAP value|)", fontsize=12)
+        plt.xlabel("mean(|value|)", fontsize=12)
         plt.ylabel("")
         plt.title("Feature Importance", fontsize=14)
-        plt.gca().invert_yaxis()  # Invert to match SHAP's format
+        plt.gca().invert_yaxis()
         plt.grid(axis="x", linestyle="--", alpha=0.6)
 
         plt.tight_layout()
