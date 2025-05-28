@@ -1,10 +1,26 @@
+
 import shap
+import pandas as pd
 from .base import BaseExplainer
 
 class KernelSHAPExplainer(BaseExplainer):
-    def explain(self, instance):
+    def __init__(self, model, background_data):
+        super().__init__(model, background_data)
         if self.backend == "pandas":
-            explainer = shap.KernelExplainer(self.model.predict, self.data)
-            return explainer.shap_values(instance)
-        elif self.backend == "pyspark":
-            raise NotImplementedError("KernelSHAP for PySpark not supported directly.")
+            self.explainer = shap.KernelExplainer(model.predict, background_data)
+        else:
+            raise NotImplementedError("Distributed KernelSHAP not supported yet.")
+
+    def explain_row(self, instance):
+        if self.backend == "pandas":
+            shap_values = self.explainer.shap_values(instance)
+            return shap_values
+        else:
+            raise NotImplementedError("Row-wise explanation not supported for Spark.")
+
+    def explain(self, df):
+        if self.backend == "pandas":
+            shap_values = self.explainer.shap_values(df)
+            return shap_values
+        else:
+            raise NotImplementedError("Batch explanation not supported for Spark.")

@@ -1,17 +1,33 @@
-class BaseExplainer:
-    def __init__(self, model, data, task_type="classification"):
+
+
+from abc import ABC, abstractmethod
+
+class BaseExplainer(ABC):
+    def __init__(self, model, background_data):
         self.model = model
-        self.task_type = task_type
-        self.data = data
-        self.backend = self._detect_backend(data)
+        self.background_data = background_data
+        self.backend = self._detect_backend()
 
-    def _detect_backend(self, data):
-        if "pyspark.sql.dataframe.DataFrame" in str(type(data)):
-            return "pyspark"
-        elif "pandas.core.frame.DataFrame" in str(type(data)):
-            return "pandas"
-        else:
-            raise ValueError("Unsupported data type")
+    def _detect_backend(self):
+        try:
+            import pyspark
+            from pyspark.sql import DataFrame as SparkDataFrame
+            if isinstance(self.background_data, SparkDataFrame):
+                return "spark"
+        except ImportError:
+            pass
+        return "pandas"
 
-    def explain(self, instance):
-        raise NotImplementedError("Must implement in subclass")
+    @abstractmethod
+    def explain_row(self, instance):
+        """
+        Explain a single row/instance.
+        """
+        pass
+
+    @abstractmethod
+    def explain(self, df):
+        """
+        Explain a full DataFrame.
+        """
+        pass
