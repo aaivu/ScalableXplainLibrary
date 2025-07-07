@@ -9,6 +9,7 @@
 **/*.pyc
 **/*.pyo
 
+
 # Ignore specific test output files
 scalableXplain/tests/shap_bar_plot.png
 scalableXplain/tests/test_iris_shap_force_plot.html
