@@ -1,10 +1,14 @@
 .venv/
 .idea/
-
+.metals/
+.bsp/
+.scala-build/
+# .vscode/
 # Ignore Python bytecode files
 **/__pycache__/
 **/*.pyc
 **/*.pyo
+
 
 # Ignore specific test output files
 scalableXplain/tests/shap_bar_plot.png
