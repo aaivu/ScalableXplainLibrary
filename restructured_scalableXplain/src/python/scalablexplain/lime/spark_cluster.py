@@ -1,10 +1,9 @@
-# kernel_shap/spark_cluster.py
+# lime/spark_cluster.py
 
-from synapse.ml.explainers import TabularSHAP
+from synapse.ml.explainers import TabularLIME
 from pyspark.sql.functions import rand, broadcast
-from core.explanations import FeatureImportanceExplanation
 
-class SparkKernelSHAPExplainer(FeatureImportanceExplanation):
+class SparkLIMEExplainer():
     def __init__(self, model, input_cols, target_col="probability", target_classes=[1], background_data=None, num_samples=5000):
         """
         model: Trained PySpark ML pipeline model
@@ -12,7 +11,7 @@ class SparkKernelSHAPExplainer(FeatureImportanceExplanation):
         target_col: Name of the model output column to explain
         target_classes: Class indices to explain (for classification)
         background_data: Optional. If None, will sample from training data later
-        num_samples: Number of SHAP samples
+        num_samples: Number of LIME samples
         """
         self.model = model
         self.input_cols = input_cols
@@ -24,14 +23,14 @@ class SparkKernelSHAPExplainer(FeatureImportanceExplanation):
 
     def build_explainer(self, training_data):
         """
-        Prepares the TabularSHAP explainer using the training dataset.
+        Prepares the TabularLIME explainer using the training dataset.
         """
         if self.background_data is None:
             self.background_data = training_data.orderBy(rand()).limit(100).cache()
 
-        self.explainer = TabularSHAP(
+        self.explainer = TabularLIME(
             inputCols=self.input_cols,
-            outputCol="shapValues",
+            outputCol="limeValues",
             numSamples=self.num_samples,
             model=self.model,
             targetCol=self.target_col,

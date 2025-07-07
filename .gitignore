@@ -1,6 +1,9 @@
 .venv/
 .idea/
-
+.metals/
+.bsp/
+.scala-build/
+# .vscode/
 # Ignore Python bytecode files
 **/__pycache__/
 **/*.pyc
