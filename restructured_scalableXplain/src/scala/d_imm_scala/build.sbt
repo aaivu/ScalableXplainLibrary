@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.16" % Test
 )
 
-assembly / mainClass := Some("dimm.driver.IMMWrapper")
+// assembly / mainClass := Some("dimm.driver.IMMWrapper")
 
 import sbtassembly.AssemblyPlugin.autoImport._
 
