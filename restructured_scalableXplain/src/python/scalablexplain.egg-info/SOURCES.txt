@@ -16,4 +16,3 @@ src/python/scalablexplain/lime/single_node.py
 src/python/scalablexplain/lime/spark_cluster.py
 tests/test_dimm.py
 tests/test_kernel_shap.py
-tests/test_spark_kernel_shap.py

@@ -1,71 +1,65 @@
-import os
-import numpy as np
-import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.clustering import KMeans
+from pyspark.ml.linalg import Vectors
+from pyspark.sql.functions import col
+import os
 
-from scalablexplain.imm.dimm.pydimm import PyIMM  # Update if your class is elsewhere
+# === Setup Spark ===
+spark = SparkSession.builder \
+    .appName("IMM-Demo") \
+    .config("spark.jars","jars/Spark-DIMM-assembly-1.0.jar")\
+    .getOrCreate()
 
+from scalablexplain.imm.dimm.pydimm import PyIMMWrapper  
 
-def main():
-    # === Locate IMM JAR ===
-    # jars_dir = os.path.join(os.getcwd(), "jars")
-    # jar_files = [os.path.join(jars_dir, f) for f in os.listdir(jars_dir) if f.endswith(".jar")]
-    # imm_jar = next((j for j in jar_files if "IMM" in j), None)
+# === Step 1: Load Dataset ===
+# We'll use the Iris dataset from UCI
+from sklearn.datasets import load_iris
+import pandas as pd
 
-    # if not imm_jar:
-    #     print("❌ IMM backend JAR not found in ./jars/")
-    #     return
+iris = load_iris()
+pdf = pd.DataFrame(iris.data, columns=iris.feature_names)
+pdf["label"] = iris.target
+df = spark.createDataFrame(pdf)
 
-    # print(f"✅ Using JAR: {imm_jar}")
-    print(os.getcwd())
-    # === Start Spark ===
-    spark = SparkSession.builder \
-        .appName("PyIMM Smoke Test") \
-        .master("local[2]") \
-        .config("spark.jars", "jars/Spark-DIMM-assembly-1.0.jar") \
-        .getOrCreate()
+# === Step 2: Vectorize Features ===
+feature_cols = iris.feature_names
+vec_assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
+df_vec = vec_assembler.transform(df).select("features")
 
-    spark.sparkContext.setLogLevel("WARN")
+# === Step 3: Run KMeans Clustering ===
+kmeans = KMeans(k=3, seed=1, featuresCol="features", predictionCol="cluster")
+model = kmeans.fit(df_vec)
+centers = model.clusterCenters()
+df_clustered = model.transform(df_vec).select("features", "cluster")
 
-    # === JVM Debug Info ===
-    try:
-        print("JVM: ", spark._jvm)
-        print("Loaded packages: ", dir(spark._jvm.dimm.wrapper))
-        # print("IMMWrapper: ", spark._jvm.dimm.wrapper.IMMWrapper$.MODULE$)
-    except Exception as e:
-        print("⚠️ JVM issue:", e)
+# === Step 4: Convert to IMM format ===
+def to_instance(row):
+    # You'll need a matching JVM-side case class: Instance(features: Vector, clusterId: Int, weight: Double)
+    return (row["features"], int(row["cluster"]), 1.0)
 
-    # === Generate clustered data ===
-    np.random.seed(42)
-    centers = np.array([[1, 1], [5, 5], [9, 1]])
-    points_per_cluster = 10
-    rows = []
+clustered_rdd = df_clustered.rdd.map(to_instance)
 
-    for i, center in enumerate(centers):
-        for _ in range(points_per_cluster):
-            pt = np.random.normal(loc=center, scale=0.5)
-            rows.append((float(i), pt[0], pt[1]))
+# === Step 5: Run IMM Wrapper ===
+jar_path = "jars/Spark-DIMM-assembly-1.0.jar"
+imm = PyIMMWrapper(spark, jar_path)
 
-    pdf = pd.DataFrame(rows, columns=["cluster", "x1", "x2"])
-    sdf = spark.createDataFrame(pdf)
+# Cluster centers as list of arrays
+center_vectors = [Vectors.dense(c.tolist()) for c in centers]
 
-    # === Assemble feature vectors ===
-    assembler = VectorAssembler(inputCols=["x1", "x2"], outputCol="features")
-    vec_df = assembler.transform(sdf).select("cluster", "features")
+# Run IMM
+tree = imm.run(clustered_rdd, center_vectors, num_splits=32, max_bins=32, seed=42)
 
-    # === Run IMM ===
-    imm = PyIMM(spark)
-    result = imm.run(vec_df, centers)
+# === Step 6: Print Tree Summary ===
+print("\n===== IMM Tree Output =====\n")
+for node_id, node in tree.items():
+    print(f"Node {node_id}: {node}")
 
-    print("\n=== IMM Output ===")
-    print("Tree:")
-    print(result["tree"])
-    print("Splits:")
-    print(result["splits"])
-
-    spark.stop()
-
-
-if __name__ == "__main__":
-    main()
+# === Optionally: Export to DOT file ===
+# If your IMM Scala tree includes a toGraphviz method
+if hasattr(imm.service, "exportTreeToDot"):  # if exposed
+    dot = imm.service.exportTreeToDot(tree)
+    with open("imm_tree.dot", "w") as f:
+        f.write(dot)
+    print("DOT file saved as imm_tree.dot")
