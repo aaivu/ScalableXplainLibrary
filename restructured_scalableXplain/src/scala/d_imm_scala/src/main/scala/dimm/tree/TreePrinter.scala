@@ -28,4 +28,13 @@ object TreePrinter {
       s"(f${split.featureIndex} <= [bin ${split.threshold}])"
     }
   }
+
+  def printTreeAsString(tree: Map[Int, Node], splits: Array[Array[ContinuousSplit]]): String = {
+    val builder = new StringBuilder
+    builder.append("=== Final IMM Explanation Tree ===\n")
+    tree.toSeq.sortBy(_._1).foreach { case (id, node) =>
+      builder.append(s"Node $id: ${formatNode(node, splits)}\n")
+    }
+    builder.toString()
+  }
 }

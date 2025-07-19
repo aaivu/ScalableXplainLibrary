@@ -1,65 +1,65 @@
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.clustering import KMeans
-from pyspark.ml.linalg import Vectors
-from pyspark.sql.functions import col
+from scalablexplain.imm.dimm.pydimm import DIMMExplainer
 import os
+import urllib.request
 
-# === Setup Spark ===
+# ---- Configuration ----
+JAR_PATH = "jars/spark-dimm-assembly.jar"
+IRIS_CSV = "iris.csv"
+IRIS_URL = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv"
+K = 5  # Number of clusters
+DOT_OUTPUT = "imm_tree.dot"
+FEATURE_COLS = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+
+# ---- Start Spark ----
 spark = SparkSession.builder \
-    .appName("IMM-Demo") \
-    .config("spark.jars","jars/Spark-DIMM-assembly-1.0.jar")\
+    .appName("Test DIMM on Iris") \
+    .config("spark.jars", JAR_PATH) \
     .getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
-from scalablexplain.imm.dimm.pydimm import PyIMMWrapper  
+# ---- Download Iris Dataset if Needed ----
+if not os.path.exists(IRIS_CSV):
+    print("Downloading Iris dataset...")
+    urllib.request.urlretrieve(IRIS_URL, IRIS_CSV)
 
-# === Step 1: Load Dataset ===
-# We'll use the Iris dataset from UCI
-from sklearn.datasets import load_iris
-import pandas as pd
+# ---- Load Data ----
+iris_df = spark.read.csv(IRIS_CSV, header=True, inferSchema=True)
 
-iris = load_iris()
-pdf = pd.DataFrame(iris.data, columns=iris.feature_names)
-pdf["label"] = iris.target
-df = spark.createDataFrame(pdf)
+# ---- Vectorize Features ----
+vec_assembler = VectorAssembler(inputCols=FEATURE_COLS, outputCol="features")
+df = vec_assembler.transform(iris_df)
 
-# === Step 2: Vectorize Features ===
-feature_cols = iris.feature_names
-vec_assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
-df_vec = vec_assembler.transform(df).select("features")
+# ---- KMeans Clustering ----
+kmeans = KMeans(k=K, seed=42, featuresCol="features", predictionCol="prediction")
+model = kmeans.fit(df)
+clustered_df = model.transform(df)
 
-# === Step 3: Run KMeans Clustering ===
-kmeans = KMeans(k=3, seed=1, featuresCol="features", predictionCol="cluster")
-model = kmeans.fit(df_vec)
-centers = model.clusterCenters()
-df_clustered = model.transform(df_vec).select("features", "cluster")
+print("\n=== Cluster Centers ===")
+for i, center in enumerate(model.clusterCenters()):
+    print(f"Cluster {i}: {center}")
 
-# === Step 4: Convert to IMM format ===
-def to_instance(row):
-    # You'll need a matching JVM-side case class: Instance(features: Vector, clusterId: Int, weight: Double)
-    return (row["features"], int(row["cluster"]), 1.0)
+# ---- Run DIMM ----
+explainer = DIMMExplainer(model, num_splits=16, max_bins=16, seed=42)
+tree, splits, tree_str = explainer.explain(clustered_df)
 
-clustered_rdd = df_clustered.rdd.map(to_instance)
+# ---- Output Tree ----
+explainer.print_tree(tree_str)
 
-# === Step 5: Run IMM Wrapper ===
-jar_path = "jars/Spark-DIMM-assembly-1.0.jar"
-imm = PyIMMWrapper(spark, jar_path)
+# ---- Optional: Export .dot for Graphviz ----
+explainer.export_graphviz(tree_str, DOT_OUTPUT)
+print(f"\nDOT file exported to: {DOT_OUTPUT}")
 
-# Cluster centers as list of arrays
-center_vectors = [Vectors.dense(c.tolist()) for c in centers]
+# ---- Stop Spark ----
+spark.stop()
 
-# Run IMM
-tree = imm.run(clustered_rdd, center_vectors, num_splits=32, max_bins=32, seed=42)
+from graphviz import Source
 
-# === Step 6: Print Tree Summary ===
-print("\n===== IMM Tree Output =====\n")
-for node_id, node in tree.items():
-    print(f"Node {node_id}: {node}")
+dot_path = "imm_tree.dot"         # your .dot file
+output_path = "imm_tree"
 
-# === Optionally: Export to DOT file ===
-# If your IMM Scala tree includes a toGraphviz method
-if hasattr(imm.service, "exportTreeToDot"):  # if exposed
-    dot = imm.service.exportTreeToDot(tree)
-    with open("imm_tree.dot", "w") as f:
-        f.write(dot)
-    print("DOT file saved as imm_tree.dot")
+# Render and open
+src = Source.from_file(dot_path)
+src.render(output_path, format="png", view=True)
