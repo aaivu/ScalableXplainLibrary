@@ -87,7 +87,7 @@ def run_shap(model, sdf, input_cols):
     result = explainer.explain(subset_df)
 
     print("[INFO] SHAP values (first few rows):")
-    result.select("shapValues").show(truncate=False)
+    result.show(truncate=False)
 
     print("[INFO] Plotting beeswarm SHAP values...")
     explainer.plot(result, original_df=subset_df, max_instances=50)
