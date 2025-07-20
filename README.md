@@ -42,13 +42,13 @@ This is a novel algorithm presented by us in this package through our research. 
 
 ---
 
-## 🔍 Overview
+### 🔍 Overview
 
 Traditional clustering methods like k-means are powerful but hard to interpret—especially on large datasets. D-IMM bridges this gap by constructing **human-readable decision trees** that approximate the original clustering assignments. It provides **global, post-hoc explanations** that scale seamlessly with data volume and dimensionality.
 
 ---
 
-## ✨ Key Features
+### ✨ Key Features
 
 - ✅ **Scalable to 10M+ records** using distributed Spark execution.
 - ✅ **Faithful explanations** that minimize mismatches with k-means.
@@ -58,7 +58,7 @@ Traditional clustering methods like k-means are powerful but hard to interpret�
 
 ---
 
-## 📈 Performance Highlights
+### 📈 Performance Highlights
 
 - Achieves up to **3.2× speedup** compared to single-node IMM.
 - Preserves or improves **clustering fidelity** (mistake %, surrogate cost).
@@ -67,7 +67,7 @@ Traditional clustering methods like k-means are powerful but hard to interpret�
 
 ---
 
-## 🛠 Built With
+### 🛠 Built With
 
 - Apache Spark 3.5.x
 - Scala 2.12
@@ -76,7 +76,7 @@ Traditional clustering methods like k-means are powerful but hard to interpret�
 
 ---
 
-### Project Phases
+## Project Phases
 
 1. **Exploration & Benchmarking**
    - Surveyed existing explanation techniques and frameworks
@@ -114,11 +114,11 @@ Traditional clustering methods like k-means are powerful but hard to interpret�
 
 ---
 
-### License
+## License
 
 Apache License 2.0
 
-### Code of Conduct
+## Code of Conduct
 
 Please read our [code of conduct document here](https://github.com/aaivu/aaivu-introduction/blob/master/docs/code_of_conduct.md).
 
