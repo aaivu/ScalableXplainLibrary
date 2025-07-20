@@ -32,48 +32,40 @@ ScalableXplain is developed to address a key challenge in modern machine learnin
 
 - Local (single-node) explainers using NumPy, pandas, and scikit-learn  
 - Distributed explainers using PySpark and SynapseML  
-- Seamless switching between environments through unified APIs  
+- Seamless switching between environments through unified APIs
+
+## Distributed Iterative Mistake Minimization
+
+
 
 ### Project Phases
 
 1. **Exploration & Benchmarking**
    - Surveyed existing explanation techniques and frameworks
-   - Ran initial experiments on SHAP, LIME, and IMM for synthetic and benchmark datasets  
+   - Ran initial experiments on SHAP, LIME, and IMM for synthetic and benchmark datasets
+  
+2. **Research on creating a scalable algorithm that is equivalent to IMM**
+   - Researched existing algorithms for threshold tree building in Apache Spark
+   - Introduced histogram based candidate split discovery and histogram based mistake calculation to the existing IMM algorithm to make it scalable and efficient
+  
+3. **Experiments and Testing**
+   - Tested the novel algorithm on a set of large scale datasets to verify scalability and validity of results
 
-2. **Implementation**
+4. **Implementation of Package**
    - Developed unified wrapper classes for SHAP, LIME, and IMM  
    - Implemented both single-node and distributed versions  
    - Created automatic backend detection and dispatch  
 
-3. **Optimization & Visualization**
+5. **Optimization & Visualization**
    - Added visual support: SHAP bar plots, beeswarm plots, LIME text highlights  
    - Implemented efficient histogram-based mistake calculations for IMM  
    - Optimized runtime and memory for large datasets using Spark  
 
-4. **Integration & Packaging**
+6. **Integration & Packaging**
    - Integrated Scala-based D-IMM using Py4J bridge  
    - Packaged the system as a pip-installable module  
    - Added command-line utilities and Jupyter notebook demos  
 
-### Architecture Diagram
-
-```
-         +------------------+
-         |  ML Model (any)  |
-         +------------------+
-                  |
-                  v
-         +------------------+
-         | ScalableXplain   |
-         | (Python Library) |
-         +------------------+
-             /     |     \
-            /      |      \
-   +---------+ +---------+ +------------+
-   | SHAP    | | LIME    | | IMM / D-IMM|
-   +---------+ +---------+ +------------+
-    (local & dist.)         (dist. via Scala)
-```
 
 ---
 
