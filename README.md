@@ -1,20 +1,21 @@
-# Project Title / Research Title
+# ScalableXplain - Efficient XAI Tool for Scalable Machine Learning Models
 
 ![project] ![research]
 
 
 
 - <b>Project Lead(s) / Mentor(s)</b>
-    1. Name (talk forum profile link)
-    2. Name (talk forum profile link)
+    1. Dr.Uthayasanker Thayasivam
+    2. Dr.Sumanaruban Rajadurai
 - <b>Contributor(s)</b>
-    1. Name (talk forum profile link)
-    2. Name (talk forum profile link)
+    1. Inuka Ampavila
+    2. Saadha Salim
+    3. Bojitha Liyanage
 
 <b>Useful Links </b>
 
-- GitHub : <project_url>
-- Talk Forum : <talk_forum_link>
+- GitHub : [<project_url>](https://github.com/inuka-00/ScalableXplainLibrary)
+- Distributed IMM Github Repository : [<dimm_url>](https://github.com/aaivu/distributed_imm)
 
 ---
 
