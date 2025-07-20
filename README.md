@@ -20,4 +20,4 @@ ScalableXplain is a versatile explainable AI (XAI) library that provides unified
 ## 📦 Installation
 
 ```bash
-pip install scalablexplain
+pip install scalablexplain //(to be made public)
