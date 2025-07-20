@@ -36,7 +36,45 @@ ScalableXplain is developed to address a key challenge in modern machine learnin
 
 ## Distributed Iterative Mistake Minimization
 
+**D-IMM** is a scalable and interpretable algorithm for explaining **k-means clustering** results using decision trees. Built for distributed environments, D-IMM extends the original **Iterative Mistake Minimization (IMM)** algorithm to handle large-scale datasets with millions of instances efficiently using Apache Spark.
+This is a novel algorithm presented by us in this package through our research. It is based on the IMM algorithm introduced in https://arxiv.org/abs/2002.12538.
+<img width="645" height="762" alt="image" src="https://github.com/user-attachments/assets/3dc24766-d0f1-4b32-bca5-1276c7c49efd" />
 
+---
+
+## 🔍 Overview
+
+Traditional clustering methods like k-means are powerful but hard to interpret—especially on large datasets. D-IMM bridges this gap by constructing **human-readable decision trees** that approximate the original clustering assignments. It provides **global, post-hoc explanations** that scale seamlessly with data volume and dimensionality.
+
+---
+
+## ✨ Key Features
+
+- ✅ **Scalable to 10M+ records** using distributed Spark execution.
+- ✅ **Faithful explanations** that minimize mismatches with k-means.
+- ✅ **Histogram-based binning** for fast, repeatable split evaluations.
+- ✅ **Distributed mistake counting** and node refinement loop.
+- ✅ Produces interpretable **global decision trees**.
+
+---
+
+## 📈 Performance Highlights
+
+- Achieves up to **3.2× speedup** compared to single-node IMM.
+- Preserves or improves **clustering fidelity** (mistake %, surrogate cost).
+- Demonstrates **linear scalability** with increasing Spark executors.
+- Tested on real-world datasets like **HIGGS (11M points)** and **SUSY**.
+
+---
+
+## 🛠 Built With
+
+- Apache Spark 3.5.x
+- Scala 2.12
+- Java 17
+- Compatible with PySpark via wrapper interface
+
+---
 
 ### Project Phases
 
