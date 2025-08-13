@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.clustering import KMeans
-from scalablexplain.imm.dimm.pydimm import DIMMExplainer
+from scalablexplain.imm.spark_cluster import DistributedIMMExplainer
 import os
 import urllib.request
 
@@ -42,7 +42,7 @@ for i, center in enumerate(model.clusterCenters()):
     print(f"Cluster {i}: {center}")
 
 # ---- Run DIMM ----
-explainer = DIMMExplainer(model, num_splits=16, max_bins=16, seed=42)
+explainer = DistributedIMMExplainer(model, num_splits=16, max_bins=16, seed=42)
 tree, splits, tree_str = explainer.explain(clustered_df)
 
 # ---- Output Tree ----

@@ -6,8 +6,7 @@ src/python/scalablexplain.egg-info/dependency_links.txt
 src/python/scalablexplain.egg-info/requires.txt
 src/python/scalablexplain.egg-info/top_level.txt
 src/python/scalablexplain/imm/__init__.py
-src/python/scalablexplain/imm/dimm/__init__.py
-src/python/scalablexplain/imm/dimm/pydimm.py
+src/python/scalablexplain/imm/spark_cluster.py
 src/python/scalablexplain/kernel_shap/__init__.py
 src/python/scalablexplain/kernel_shap/single_node.py
 src/python/scalablexplain/kernel_shap/spark_cluster.py

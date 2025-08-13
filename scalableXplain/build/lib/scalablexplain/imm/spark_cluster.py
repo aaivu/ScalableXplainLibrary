@@ -4,7 +4,7 @@ from typing import Tuple, List, Any
 import re
 
 
-class DIMMExplainer:
+class DistributedIMMExplainer:
     def __init__(self, kmeans_model: KMeansModel, num_splits: int = 32, max_bins: int = 32, seed: int = 42):
         self.kmeans_model = kmeans_model
         self.num_splits = num_splits
