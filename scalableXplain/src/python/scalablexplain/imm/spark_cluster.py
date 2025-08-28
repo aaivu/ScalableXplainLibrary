@@ -1,3 +1,32 @@
+'''
+DistributedIMMExplainer provides a Python wrapper for distributed Iterative Mistake Minimization(IMM) tree extraction from kmeans clustered Spark DataFrames. 
+It leverages a JVM-based Scala IMM implementation to generate interpretable decision trees from cluster centers and Spark ML KMeans results. 
+The class supports exporting the tree structure, parsing Scala output, and visualizing the tree in Graphviz format.
+
+Attributes:
+    kmeans_model: Trained pyspark.ml.clustering.KMeansModel containing cluster centers.
+    num_splits: Number of splits to consider for IMM tree construction (controls tree granularity).
+    max_bins: Maximum number of bins for feature discretization in IMM.
+    seed: Random seed for reproducibility.
+
+Methods:
+    __init__(kmeans_model, num_splits=32, max_bins=32, seed=42):
+        Initializes the DistributedIMMExplainer with a Spark KMeans model and IMM tree parameters.
+
+    explain(clustered_df):
+        Runs IMM tree extraction on a Spark DataFrame containing cluster assignments and features.
+        Returns the raw JVM tree nodes, split thresholds, and a Scala-formatted tree string.
+
+    print_tree(tree_string):
+        Prints the IMM tree structure as formatted by the Scala backend.
+
+    parse_tree_string(tree_string):
+        Parses the Scala tree string into a Python dictionary of nodes, extracting node attributes.
+
+    export_graphviz(tree_string, output_path="imm_tree.dot"):
+        Converts the parsed IMM tree into Graphviz .dot format for visualization, saving to file.
+'''
+
 from pyspark.ml.clustering import KMeansModel
 from pyspark.sql import DataFrame
 from typing import Tuple, List, Any
