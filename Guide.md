@@ -88,3 +88,101 @@ ScalableXplain is an extensible library for scalable explainable AI (XAI) on tab
 - SynapseML-based algorithms require the SynapseML JAR.
 - Custom distributed algorithms require Scala implementation and JAR packaging.
 - Python and Spark code are separated for
+
+# Installation Guide
+
+This section describes how to install and set up the ScalableXplain library for both Python and Scala components.
+
+---
+
+## Required Python Packages
+
+You will need the following Python packages:
+
+- `pyspark` (version should match your installed Spark, e.g., `pyspark>=3.5.1`)
+- `numpy`
+- `pandas`
+- `scikit-learn`
+- `matplotlib`
+- `lime`
+- `shap`
+- `synapseml`
+- `seaborn`
+- `graphviz`
+- `setuptools`, `wheel` (for building the Python wheel)
+
+You can install all dependencies with:
+
+```bash
+pip install pyspark numpy pandas scikit-learn matplotlib lime shap synapseml seaborn graphviz setuptools wheel
+```
+
+---
+
+## Building the Python Wheel
+
+The Python package is managed using a `pyproject.toml` file located at:
+
+```
+scalableXplain/scalableXplain/pyproject.toml
+```
+
+To build the wheel file, run the following command from the `scalableXplain/scalableXplain` directory:
+
+```bash
+python3 -m build
+```
+or, if you only want the wheel:
+```bash
+python3 -m build --wheel
+```
+
+This will generate a `.whl` file in the `dist/` directory, which you can install with:
+
+```bash
+pip install dist/scalablexplain-0.1.0-py3-none-any.whl
+```
+
+---
+
+## Building the Scala JAR for DIMM
+
+The Scala implementation for distributed IMM (Iterative Mistake Minimization) is managed using `sbt`.  
+The `build.sbt` file should be located in the root of your Scala IMM project, for example:
+
+```
+scalableXplain/dimm-scala/build.sbt
+```
+
+To build the JAR file, navigate to the `dimm-scala` directory and run:
+
+```bash
+sbt package
+```
+
+The resulting JAR file will be found in:
+
+```
+scalableXplain/dimm-scala/target/scala-<scala_version>/
+```
+(e.g., `target/scala-2.12/dimm_2.12-0.1.jar`)
+
+Include this JAR in your Spark session using the `spark.jars` configuration.
+
+---
+
+## File Locations
+
+- **Python build configuration:**  
+  `scalableXplain/scalableXplain/pyproject.toml`
+
+- **Scala sbt build file:**  
+  `scalableXplain/dimm-scala/build.sbt`
+
+---
+
+## Additional Notes
+
+- Ensure the versions of `pyspark` and your Spark cluster match.
+- For distributed algorithms using SynapseML, include the SynapseML JAR in your Spark session as shown in the example notebooks.
+- For custom distributed algorithms (like IMM), include your built Scala JAR in the Spark
