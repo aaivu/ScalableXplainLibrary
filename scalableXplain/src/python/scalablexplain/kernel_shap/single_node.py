@@ -1,9 +1,36 @@
+'''
+KernelSHAPExplainer provides a wrapper for SHAP's KernelExplainer to interpret predictions of 
+sklearn-compatible models using SHAP values. It supports both regression and classification models, 
+automatically selecting the appropriate prediction function. The class allows users to build an explainer 
+from training data, generate SHAP values for new instances, and visualize feature attributions.
+Attributes:
+    model: Trained sklearn-compatible model (should implement predict_proba or predict).
+    input_cols: List of input feature column names.
+    background_data: DataFrame or numpy array to use as the background distribution for SHAP.
+    num_samples: Number of samples used for KernelSHAP approximation.
+    explainer: SHAP KernelExplainer instance (initialized after build_explainer is called).
+Methods:
+    __init__(model, input_cols, background_data=None, num_samples=5000):
+        Initializes the KernelSHAPExplainer with the given model, input columns, optional background data, 
+        and number of samples for SHAP approximation.
+    build_explainer(training_data):
+        Initializes the SHAP KernelExplainer using the provided training data. If background_data is not set, 
+        samples 100 rows from training_data as the background. Selects the appropriate prediction function 
+        based on model type.
+    explain(instances_df):
+        Computes SHAP values for the provided instances. Returns a DataFrame of SHAP values with feature 
+        columns and instance indices.
+    plot(shap_values_df, instances_df, max_instances=100):
+        Visualizes SHAP values using bar or beeswarm plots. Saves the plot as a PNG file and displays it.
+'''
+
 import shap
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 class KernelSHAPExplainer:
+    
     def __init__(self, model, input_cols, background_data=None, num_samples=5000):
         """
         model: Trained sklearn-compatible model (should implement predict_proba or predict)
@@ -18,6 +45,20 @@ class KernelSHAPExplainer:
         self.explainer = None
 
     def build_explainer(self, training_data):
+        """
+        Initializes the SHAP KernelExplainer for the model using the provided training data.
+
+        Args:
+            training_data (pd.DataFrame): The dataset used to sample background data for the explainer. 
+                Should contain columns specified in self.input_cols.
+
+        Functionality:
+            - Samples 100 rows from the training data to use as background data if not already set.
+            - Defines a prediction function compatible with SHAP, using either `predict_proba` or `predict` depending on regression or classification use case.
+            - Instantiates a SHAP KernelExplainer with the prediction function and background data.
+
+        """
+        I
         if self.background_data is None:
             self.background_data = training_data[self.input_cols].sample(n=100, random_state=42)
 

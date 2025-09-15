@@ -1,3 +1,28 @@
+'''
+SparkKernelSHAPExplainer provides an interface for generating and visualizing SHAP (SHapley Additive exPlanations) values
+for tabular data using distributed Spark ML models. It leverages SynapseML's TabularSHAP for scalable explanation of 
+model predictions, supporting both single and multi-instance SHAP value computation and visualization.
+
+Attributes:
+    model: The trained Spark ML model to be explained.
+    input_cols: List of feature column names used as model inputs.
+    target_col: Name of the output column to explain (default: "probability").
+    target_classes: List of target class indices for explanation (default: [1]).
+    background_data: Spark DataFrame used as background data for SHAP value estimation.
+    num_samples: Number of samples to use for SHAP value estimation (default: 5000).
+    explainer: Internal TabularSHAP explainer instance.
+Methods:
+    build_explainer(training_data):
+        Initializes the TabularSHAP explainer using the provided training data and optional background data.
+    explain(instances_df):
+        Computes SHAP values for the given Spark DataFrame of instances.
+        Raises ValueError if the explainer has not been built.
+    plot(explained_df, original_df, max_instances=100):
+        Visualizes SHAP values for up to max_instances instances using bar or beeswarm plots.
+        Saves the plot to a file and displays it.
+        Raises ValueError if required data is missing or if there is a shape mismatch.
+'''
+
 from synapse.ml.explainers import TabularSHAP
 from pyspark.sql.functions import rand, broadcast
 import matplotlib.pyplot as plt

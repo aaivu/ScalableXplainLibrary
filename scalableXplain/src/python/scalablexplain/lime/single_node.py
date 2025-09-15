@@ -1,3 +1,19 @@
+"""
+LIMEExplainer: A wrapper class for generating local explanations using LIME for tabular data.
+
+This class supports both classification and regression models (scikit-learn compatible).
+It provides methods to build a LIME explainer, generate explanations for individual instances,
+and visualize the explanations using bar and beeswarm plots.
+
+Usage:
+    - Initialize with a trained model and feature information.
+    - Call build_explainer() with training data to prepare the explainer.
+    - Use explain() to get LIME weights for new instances.
+    - Use plot() to visualize the explanations.
+
+Dependencies: numpy, pandas, matplotlib, seaborn, lime
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

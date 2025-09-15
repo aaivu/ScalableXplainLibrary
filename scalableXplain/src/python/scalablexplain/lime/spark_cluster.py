@@ -1,3 +1,27 @@
+"""
+SparkLIMEExplainer provides a wrapper for SynapseML's TabularLIME to interpret predictions of Spark ML models using LIME values.
+It supports explanation of both single and multiple instances, visualization of feature importances, and integration with PySpark DataFrames.
+Attributes:
+    model: Trained Spark ML model (compatible with SynapseML TabularLIME).
+    input_cols: List of input feature column names.
+    target_col: Name of the output column to explain (default: "probability").
+    target_classes: List of target class indices for explanation (default: [1]).
+    background_data: Spark DataFrame used as the background distribution for LIME.
+    num_samples: Number of samples used for LIME approximation.
+    explainer: TabularLIME instance (initialized after build_explainer is called).
+Methods:
+    __init__(model, input_cols, target_col="probability", target_classes=[1], background_data=None, num_samples=5000):
+        Initializes the SparkLIMEExplainer with the given model, input columns, target column, target classes,
+        optional background data, and number of samples for LIME approximation.
+    build_explainer(training_data):
+        Initializes the TabularLIME explainer using the provided training data. If background_data is not set,
+        samples 100 rows from training_data as the background.
+    explain(instances_df):
+        Computes LIME values for the provided instances. Returns a Spark DataFrame with LIME values for each instance.
+    plot(explained_df, original_df, max_instances=100):
+        Visualizes LIME values using bar or beeswarm plots. Saves the plot as a PNG file and displays it.
+"""
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 from synapse.ml.explainers import TabularLIME
