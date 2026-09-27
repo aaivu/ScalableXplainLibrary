@@ -35,7 +35,7 @@ ScalableXplain is developed to address a key challenge in modern machine learnin
 - Seamless switching between environments through unified APIs
 
 ## Distributed Iterative Mistake Minimization
-
+Research Publication: https://ieeexplore.ieee.org/document/11691525
 **D-IMM** is a scalable and interpretable algorithm for explaining **k-means clustering** results using decision trees. Built for distributed environments, D-IMM extends the original **Iterative Mistake Minimization (IMM)** algorithm to handle large-scale datasets with millions of instances efficiently using Apache Spark.
 This is a novel algorithm presented by us in this package through our research. It is based on the IMM algorithm introduced in https://arxiv.org/abs/2002.12538.
 <img width="645" height="762" alt="image" src="https://github.com/user-attachments/assets/3dc24766-d0f1-4b32-bca5-1276c7c49efd" />
